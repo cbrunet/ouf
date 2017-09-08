@@ -8,11 +8,12 @@ from PyQt5.QtCore import Qt
 import os.path
 
 
-# TODO: show/hide hidden files
+# TODO: show/hide hidden files: use proxy
 # TODO: show/hide files
 # TODO: icons
 # TODO: color symlinks / not readable / hidden
 # TODO: handle links
+# TODO: read .desktop files!
 
 
 class FileModel(QtCore.QAbstractItemModel):
@@ -98,6 +99,7 @@ class FileModel(QtCore.QAbstractItemModel):
         TODO: move to filesystemitem?
 
         """
+        path = os.path.expanduser(path)
         if not os.path.exists(path):
             return QtCore.QModelIndex()
 

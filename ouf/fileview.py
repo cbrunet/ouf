@@ -1,10 +1,14 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+import os
+import subprocess
+import sys
 
 # TODO: enter to select / open
 # TODO: double-click to open
 # TODO: modifiers to open in new window
+# TODO: switch icons / tree
 
 
 class FileView(QtWidgets.QTreeView):
@@ -15,6 +19,7 @@ class FileView(QtWidgets.QTreeView):
         super().__init__(parent)
 
         self.setIconSize(QtCore.QSize(32, 32))
+        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
         self.doubleClicked.connect(self.openAction)
 
@@ -25,7 +30,11 @@ class FileView(QtWidgets.QTreeView):
                 self.setRootIndex(index)
                 self.currentPathChanged.emit(item.path)
             else:
-                pass  # TODO: open file / exec process / etc.
+                # TODO: open file / exec process / etc.
+                if sys.platform.startswith('linux'):
+                    subprocess.run(['xdg-open', item.path])
+                else:
+                    os.startfile(item.path)  # windows
         else:
             # go to root
             self.setRootIndex(index)

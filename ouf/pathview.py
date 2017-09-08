@@ -15,8 +15,9 @@ class PathView(QtWidgets.QWidget):
         layout = QtWidgets.QHBoxLayout()
         layout.setContentsMargins(0, 0, 0, 0)
 
-        self.up_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-up'), self.tr("Up"), self)
+        self.up_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-up'), self.tr("Parent Directory"), self)
         self.up_action.setEnabled(False)
+        self.up_action.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+Up")))
         self.up_action.triggered.connect(self.goUp)
 
         self.up_button = QtWidgets.QToolButton()
