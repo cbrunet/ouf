@@ -60,7 +60,10 @@ class FileModel(QtCore.QAbstractItemModel):
             return self.rowCount() > 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
-        return self.tr("Filename")
+        if role == Qt.DisplayRole:
+            if orientation == Qt.Horizontal:
+                if section == 0:
+                    return self.tr("Filename")
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():

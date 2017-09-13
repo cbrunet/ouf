@@ -9,6 +9,15 @@ import argparse
 import sys
 
 
+# TODO: icon factory
+#       - from theme
+#       - local
+#       - add emblem
+#       - colorize
+# TODO: use gettext instead of tr
+# TODO: global keyboard accelerator file
+
+
 def parseargs():
     parser = argparse.ArgumentParser(description=version.description)
     parser.add_argument('path', nargs='?', default='~', help='location to open')
