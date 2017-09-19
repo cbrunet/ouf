@@ -8,7 +8,6 @@ from PyQt5.QtCore import Qt
 import os.path
 
 
-# TODO: show/hide hidden files: use proxy
 # TODO: show/hide files
 # TODO: icons
 # TODO: color symlinks / not readable / hidden

@@ -4,8 +4,6 @@ from ouf.pathview import PathView
 
 from PyQt5 import QtWidgets
 
-# TODO: use proxy model
-
 
 class FilePane(QtWidgets.QWidget):
 

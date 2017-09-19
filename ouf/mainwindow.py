@@ -33,6 +33,12 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_new.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+N")))
         self.action_new.triggered.connect(self.on_action_new)
 
+        self.action_hidden = QtWidgets.QAction(self.tr("Show Hidden Files"), self)
+        self.action_hidden.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+H")))
+        self.action_hidden.setCheckable(True)
+        self.action_hidden.setChecked(self.pane.view.proxy.show_hidden)
+        self.action_hidden.toggled.connect(self.on_action_hidden)
+
     def _create_menus(self):
         app_menu = self.menuBar().addMenu(self.tr("Ufo"))
         app_menu.addAction(self.action_new)
@@ -54,6 +60,9 @@ class MainWindow(QtWidgets.QMainWindow):
         go_menu.addAction(self.pane.path_view.home_action)
 
         ## View
+        view_menu = self.menuBar().addMenu(self.tr("View"))
+        view_menu.addAction(self.action_hidden)
+
         # Show/hide hidden files
         # Directory tree
         # File preview
@@ -67,3 +76,6 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_action_new(self):
         args = [sys.argv[0], self.pane.current_directory()]
         subprocess.Popen(args)
+
+    def on_action_hidden(self, show):
+        self.pane.view.proxy.show_hidden = show

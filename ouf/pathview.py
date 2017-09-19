@@ -28,7 +28,8 @@ class PathView(QtWidgets.QWidget):
         self.up_action.triggered.connect(self.go_up)
 
         self.home_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-home'), self.tr("Home"), self)
-        self.home_action.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+H")))
+        self.home_action.setShortcuts([QtGui.QKeySequence(self.tr("Ctrl+Home")),
+                                       QtGui.QKeySequence(self.tr("Alt+Home"))])
         self.home_action.triggered.connect(self.go_home)
 
     def _create_layout(self):
@@ -65,11 +66,11 @@ class PathView(QtWidgets.QWidget):
     def go_to(self, path=None):
         """Trigger action to go to specified path."""
         if self.update_path(path if path is not None else self.path_edit.text()):
-            index = self._view.model().pathIndex(self.path)
-            self._view.open_action(index)
+            index = self._view.model().sourceModel().pathIndex(self.path)
+            self._view.open_action(self._view.proxy.mapFromSource(index))
 
     def go_up(self):
-        parent = '' if self._path == self._view.model().ROOT_PATH else os.path.dirname(self._path)
+        parent = '' if self._path == self._view.model().sourceModel().ROOT_PATH else os.path.dirname(self._path)
         self.go_to(parent)
 
     def go_home(self):

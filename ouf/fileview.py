@@ -1,4 +1,6 @@
 
+from ouf.filemodel.proxymodel import FileProxyModel
+
 from PyQt5 import QtCore, QtWidgets
 
 import os
@@ -17,15 +19,28 @@ class FileView(QtWidgets.QTreeView):
     def __init__(self, model, parent=None):
         super().__init__(parent)
 
-        self.setModel(model)
+        self.proxy = FileProxyModel()
+        self.proxy.setSourceModel(model)
+        self.setModel(self.proxy)
+
+        self.setSortingEnabled(True)
+        self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setIconSize(QtCore.QSize(32, 32))
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
 
         self.activated.connect(self.open_action)
 
     def open_action(self, index):
+        """
+
+        Args:
+            index: proxy index
+
+        Returns:
+
+        """
         if index.isValid():
-            item = index.internalPointer()
+            item = self.proxy.mapToSource(index).internalPointer()
             path = index.data(QtCore.Qt.UserRole)
             if item.isDir():
                 self.setRootIndex(index)
