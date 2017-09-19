@@ -12,6 +12,7 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
         self.setSortCaseSensitivity(False)
         self.setSortLocaleAware(True)
         self._show_hidden = False
+        self._show_dirs_only = False
 
     @property
     def show_hidden(self):
@@ -20,6 +21,15 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
     @show_hidden.setter
     def show_hidden(self, show):
         self._show_hidden = show
+        self.invalidate()  # Why doesn't invalidateFilter work?
+
+    @property
+    def show_dirs_only(self):
+        return self._show_dirs_only
+
+    @show_dirs_only.setter
+    def show_dirs_only(self, show):
+        self._show_dirs_only = show
         self.invalidate()  # Why doesn't invalidateFilter work?
 
     def filterAcceptsRow(self, source_row, source_parent):
@@ -32,10 +42,14 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
         Returns:
 
         """
+        index = self.sourceModel().index(source_row, 0, source_parent)
         if not self.show_hidden:
-            index = self.sourceModel().index(source_row, 0, source_parent)
             name = index.data()
             if name.startswith("."):
+                return False
+
+        if self.show_dirs_only:
+            if not index.internalPointer().isDir():
                 return False
 
         return super().filterAcceptsRow(source_row, source_parent)

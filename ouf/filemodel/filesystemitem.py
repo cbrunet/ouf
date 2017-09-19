@@ -18,7 +18,7 @@ class FileSystemItem(FileModelItem):
     def data(self, role=Qt.DisplayRole):
         if role == Qt.DisplayRole:
             if self.isRoot():
-                return self.tr("File System")
+                return _("File System")
         if role == Qt.UserRole:
             if self.isLink():
                 return os.path.join(os.path.dirname(self.path), os.readlink(self.path))

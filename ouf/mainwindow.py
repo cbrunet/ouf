@@ -16,7 +16,7 @@ class MainWindow(QtWidgets.QMainWindow):
         super().__init__(parent)
 
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
-        self.setWindowTitle(self.tr("Universal File Organiser"))
+        self.setWindowTitle(_("Universal File Organiser"))
         self.setWindowIcon(QtGui.QIcon.fromTheme('system-file-manager'))
 
         self.model = FileModel()
@@ -29,18 +29,18 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setCentralWidget(self.pane)
 
     def _create_actions(self):
-        self.action_new = QtWidgets.QAction(self.tr("New Window"), self)
-        self.action_new.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+N")))
+        self.action_new = QtWidgets.QAction(_("New Window"), self)
+        self.action_new.setShortcuts(QtGui.QKeySequence(_("Ctrl+N")))
         self.action_new.triggered.connect(self.on_action_new)
 
-        self.action_hidden = QtWidgets.QAction(self.tr("Show Hidden Files"), self)
-        self.action_hidden.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+H")))
+        self.action_hidden = QtWidgets.QAction(_("Show Hidden Files"), self)
+        self.action_hidden.setShortcuts(QtGui.QKeySequence(_("Ctrl+H")))
         self.action_hidden.setCheckable(True)
         self.action_hidden.setChecked(self.pane.view.proxy.show_hidden)
         self.action_hidden.toggled.connect(self.on_action_hidden)
 
     def _create_menus(self):
-        app_menu = self.menuBar().addMenu(self.tr("Ufo"))
+        app_menu = self.menuBar().addMenu(_("Ufo"))
         app_menu.addAction(self.action_new)
         # new tab
         # close / quit
@@ -53,17 +53,15 @@ class MainWindow(QtWidgets.QMainWindow):
         # delete
         # select all / none
 
-        go_menu = self.menuBar().addMenu(self.tr("Go"))
+        go_menu = self.menuBar().addMenu(_("Go"))
         # back
         # forward
         go_menu.addAction(self.pane.path_view.up_action)
         go_menu.addAction(self.pane.path_view.home_action)
 
         ## View
-        view_menu = self.menuBar().addMenu(self.tr("View"))
+        view_menu = self.menuBar().addMenu(_("View"))
         view_menu.addAction(self.action_hidden)
-
-        # Show/hide hidden files
         # Directory tree
         # File preview
         # Split / unsplit

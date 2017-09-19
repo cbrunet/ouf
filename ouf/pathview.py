@@ -22,14 +22,14 @@ class PathView(QtWidgets.QWidget):
         self.go_to(path)
 
     def _create_actions(self):
-        self.up_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-up'), self.tr("Parent Directory"), self)
+        self.up_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-up'), _("Parent Directory"), self)
         self.up_action.setEnabled(False)
-        self.up_action.setShortcuts(QtGui.QKeySequence(self.tr("Ctrl+Up")))
+        self.up_action.setShortcuts(QtGui.QKeySequence(_("Ctrl+Up")))
         self.up_action.triggered.connect(self.go_up)
 
-        self.home_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-home'), self.tr("Home"), self)
-        self.home_action.setShortcuts([QtGui.QKeySequence(self.tr("Ctrl+Home")),
-                                       QtGui.QKeySequence(self.tr("Alt+Home"))])
+        self.home_action = QtWidgets.QAction(QtGui.QIcon.fromTheme('go-home'), _("Home"), self)
+        self.home_action.setShortcuts([QtGui.QKeySequence(_("Ctrl+Home")),
+                                       QtGui.QKeySequence(_("Alt+Home"))])
         self.home_action.triggered.connect(self.go_home)
 
     def _create_layout(self):

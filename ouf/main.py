@@ -6,6 +6,7 @@ from ouf import version
 from PyQt5 import QtCore, QtWidgets
 
 import argparse
+import gettext
 import sys
 
 
@@ -14,7 +15,6 @@ import sys
 #       - local
 #       - add emblem
 #       - colorize
-# TODO: use gettext instead of tr
 # TODO: global keyboard accelerator file
 
 
@@ -25,11 +25,12 @@ def parseargs():
 
 
 def main():
+    gettext.install(version.name)
 
-    QtCore.QCoreApplication.setApplicationName("ouf")
+    QtCore.QCoreApplication.setApplicationName(version.name)
     QtCore.QCoreApplication.setApplicationVersion(version.version)
-    QtCore.QCoreApplication.setOrganizationDomain("cbrunet.net")
-    QtCore.QCoreApplication.setOrganizationName("cbrunet")
+    QtCore.QCoreApplication.setOrganizationDomain(version.domain)
+    QtCore.QCoreApplication.setOrganizationName(version.organization)
 
     app = QtWidgets.QApplication(sys.argv)
     args = parseargs()

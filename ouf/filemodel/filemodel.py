@@ -8,7 +8,6 @@ from PyQt5.QtCore import Qt
 import os.path
 
 
-# TODO: show/hide files
 # TODO: icons
 # TODO: color symlinks / not readable / hidden
 # TODO: handle links
@@ -62,7 +61,7 @@ class FileModel(QtCore.QAbstractItemModel):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
                 if section == 0:
-                    return self.tr("Filename")
+                    return _("Filename")
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():
