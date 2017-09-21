@@ -1,4 +1,5 @@
 
+from ouf import shortcuts
 from ouf.filemodel.filemodel import FileModel
 from ouf.filepane import FilePane
 
@@ -20,7 +21,6 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowIcon(QtGui.QIcon.fromTheme('system-file-manager'))
 
         self.model = FileModel()
-
         self.pane = FilePane(self.model, path, self)
 
         self._create_actions()
@@ -30,11 +30,15 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def _create_actions(self):
         self.action_new = QtWidgets.QAction(_("New Window"), self)
-        self.action_new.setShortcuts(QtGui.QKeySequence(_("Ctrl+N")))
+        self.action_new.setShortcuts(shortcuts.new_window)
         self.action_new.triggered.connect(self.on_action_new)
 
+        self.action_new_folder = QtWidgets.QAction(_("New Folder"), self)
+        self.action_new_folder.setShortcuts(shortcuts.new_folder)
+        self.action_new_folder.triggered.connect(self.create_new_directory)
+
         self.action_hidden = QtWidgets.QAction(_("Show Hidden Files"), self)
-        self.action_hidden.setShortcuts(QtGui.QKeySequence(_("Ctrl+H")))
+        self.action_hidden.setShortcuts(shortcuts.hidden_files)
         self.action_hidden.setCheckable(True)
         self.action_hidden.setChecked(self.pane.view.proxy.show_hidden)
         self.action_hidden.toggled.connect(self.on_action_hidden)
@@ -45,8 +49,8 @@ class MainWindow(QtWidgets.QMainWindow):
         # new tab
         # close / quit
 
-        ## File
-        # new directory
+        file_menu = self.menuBar().addMenu(_("File"))
+        file_menu.addAction(self.action_new_folder)
         # new file
         # new...
         # cut / copy / paste
@@ -72,8 +76,13 @@ class MainWindow(QtWidgets.QMainWindow):
         # Whats this
 
     def on_action_new(self):
-        args = [sys.argv[0], self.pane.current_directory()]
+        args = [sys.argv[0], self.pane.current_directory]
         subprocess.Popen(args)
+
+    def create_new_directory(self):
+        index = self.model.create_new_directory(self.pane.current_directory)
+        pindex = self.pane.view.proxy.mapFromSource(index)
+        self.pane.view.setCurrentIndex(pindex)  # TODO: why doesn't it work?
 
     def on_action_hidden(self, show):
         self.pane.view.proxy.show_hidden = show

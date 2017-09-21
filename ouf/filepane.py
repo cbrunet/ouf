@@ -19,5 +19,6 @@ class FilePane(QtWidgets.QWidget):
 
         self.setLayout(layout)
 
+    @property
     def current_directory(self):
         return self.path_view.path

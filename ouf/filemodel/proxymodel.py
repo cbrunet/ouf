@@ -1,6 +1,8 @@
 
+from ouf.filemodel import SortRole
 
 from PyQt5 import QtCore
+
 
 
 class FileProxyModel(QtCore.QSortFilterProxyModel):
@@ -9,8 +11,9 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
         super().__init__(parent)
 
         self.setDynamicSortFilter(True)
-        self.setSortCaseSensitivity(False)
-        self.setSortLocaleAware(True)
+        # self.setSortCaseSensitivity(False)
+        # self.setSortLocaleAware(True)
+        # self.setSortRole(SortRole)
         self._show_hidden = False
         self._show_dirs_only = False
 
@@ -53,3 +56,6 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
                 return False
 
         return super().filterAcceptsRow(source_row, source_parent)
+
+    def lessThan(self, left, right):
+        return left.data(SortRole) < right.data(SortRole)

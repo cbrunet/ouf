@@ -1,7 +1,9 @@
-
+from ouf.filemodel import SortRole
 
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
+
+import natsort as ns
 
 from enum import IntEnum
 import os.path
@@ -24,6 +26,7 @@ class FileModelItem(QtCore.QObject):
         self.path = path
 
         self._path_list = None
+        self._alphanum = ns.natsort_key(os.path.basename(path), alg=ns.I|ns.LA|ns.IC) if path else ''
 
     @property
     def path_list(self):
@@ -46,6 +49,9 @@ class FileModelItem(QtCore.QObject):
 
         if role == Qt.UserRole:
             return self.path
+
+        if role == SortRole:
+            return self._alphanum
 
     def isLoaded(self):
         return self._path_list is not None

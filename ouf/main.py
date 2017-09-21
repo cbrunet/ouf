@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-from ouf.mainwindow import MainWindow
 from ouf import version
 
 from PyQt5 import QtCore, QtWidgets
@@ -15,7 +14,6 @@ import sys
 #       - local
 #       - add emblem
 #       - colorize
-# TODO: global keyboard accelerator file
 
 
 def parseargs():
@@ -26,6 +24,8 @@ def parseargs():
 
 def main():
     gettext.install(version.name)
+
+    from ouf.mainwindow import MainWindow
 
     QtCore.QCoreApplication.setApplicationName(version.name)
     QtCore.QCoreApplication.setApplicationVersion(version.version)

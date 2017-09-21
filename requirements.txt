@@ -1,2 +1,4 @@
-
+fastnumbers
+natsort
+PyICU
 PyQt5

@@ -53,9 +53,10 @@ class FileModel(QtCore.QAbstractItemModel):
 
     def hasChildren(self, parent=QtCore.QModelIndex()):
         if parent.isValid():
-            return parent.internalPointer().isDir()
-        else:
-            return self.rowCount() > 0
+            parent_item = parent.internalPointer()
+            if not parent_item.isLoaded():
+                return parent_item.isDir()
+        return self.rowCount() > 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.DisplayRole:
@@ -110,4 +111,23 @@ class FileModel(QtCore.QAbstractItemModel):
         item = self._addItem(FileItemType.filesystem, path)
         parent_item = self._addItem(FileItemType.filesystem, os.path.dirname(path))
         row = parent_item.path_list.index(path)
+        return self.createIndex(row, 0, item)
+
+    def create_new_directory(self, path):
+        i = 0
+        folder_name = os.path.join(path, _("New Folder"))
+        while os.path.exists(folder_name):
+            i += 1
+            folder_name = os.path.join(path, _("New Folder ({})").format(i))
+
+        parent_index = self.pathIndex(path)
+
+        row = self.rowCount(parent_index)
+        self.beginInsertRows(parent_index, row, row)
+        os.mkdir(folder_name)
+        parent = parent_index.internalPointer()
+        item = self._addItem(FileItemType.filesystem, folder_name)
+        parent.path_list.append(folder_name)
+        self.endInsertRows()
+
         return self.createIndex(row, 0, item)

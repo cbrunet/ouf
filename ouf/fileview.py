@@ -27,6 +27,10 @@ class FileView(QtWidgets.QTreeView):
         self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setIconSize(QtCore.QSize(32, 32))
         self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setUniformRowHeights(True)
+        self.setAllColumnsShowFocus(True)
+        # self.setAnimated(True)
 
         self.activated.connect(self.open_action)
 
