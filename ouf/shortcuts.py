@@ -7,6 +7,7 @@ new_window = QtGui.QKeySequence(_("Ctrl+N"))
 
 # File
 new_folder = QtGui.QKeySequence(_("Ctrl+Shift+N"))
+delete = [QtGui.QKeySequence(_("Delete")), QtGui.QKeySequence(_("Backspace"))]
 
 # Go
 go_up = QtGui.QKeySequence(_("Ctrl+Up"))

@@ -54,7 +54,7 @@ class MainWindow(QtWidgets.QMainWindow):
         # new file
         # new...
         # cut / copy / paste
-        # delete
+        file_menu.addAction(self.pane.view.action_delete)
         # select all / none
 
         go_menu = self.menuBar().addMenu(_("Go"))
@@ -81,6 +81,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
     def create_new_directory(self):
         index = self.model.create_new_directory(self.pane.current_directory)
+        self.pane.view.proxy.invalidate()
         pindex = self.pane.view.proxy.mapFromSource(index)
         self.pane.view.setCurrentIndex(pindex)  # TODO: why doesn't it work?
 

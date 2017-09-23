@@ -1,3 +1,4 @@
+import shutil
 
 from ouf.filemodel.filemodelitem import FileItemType
 from ouf.filemodel.filesystemitem import FileSystemItem
@@ -84,7 +85,10 @@ class FileModel(QtCore.QAbstractItemModel):
                 return QtCore.QModelIndex()
             parent_path = os.path.dirname(item.path)
             parent_item = self._addItem(item.type, parent_path)
-            row = parent_item.path_list.index(item.path)
+            try:
+                row = parent_item.path_list.index(item.path)
+            except ValueError:
+                return QtCore.QModelIndex()
             return self.createIndex(row, 0, parent_item)
         return QtCore.QModelIndex()
 
@@ -131,3 +135,25 @@ class FileModel(QtCore.QAbstractItemModel):
         self.endInsertRows()
 
         return self.createIndex(row, 0, item)
+
+    def delete_files(self, indexes):
+        #TODO: undo / redo
+
+        paths = [index.data(Qt.UserRole) for index in indexes if index.isValid()]
+        for path in paths:
+            if path == self.ROOT_PATH:
+                continue
+
+            item = self._addItem(FileItemType.filesystem, path)
+            parent = self._addItem(FileItemType.filesystem, os.path.dirname(path))
+            parent_index = self.pathIndex(parent.path)
+            row = parent.path_list.index(path)
+
+            self.beginRemoveRows(parent_index, row, row)
+            del parent.path_list[row]
+            # del self._files[path]
+            if item.isDir():
+                shutil.rmtree(path)
+            else:
+                os.remove(path)
+            self.endRemoveRows()
