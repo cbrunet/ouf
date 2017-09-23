@@ -33,21 +33,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.action_new.setShortcuts(shortcuts.new_window)
         self.action_new.triggered.connect(self.on_action_new)
 
+        self.action_close = QtWidgets.QAction(_("Close Window"), self)
+        self.action_close.setShortcuts(shortcuts.close_window)
+        self.action_close.triggered.connect(self.close)
+
         self.action_new_folder = QtWidgets.QAction(_("New Folder"), self)
         self.action_new_folder.setShortcuts(shortcuts.new_folder)
         self.action_new_folder.triggered.connect(self.create_new_directory)
-
-        self.action_hidden = QtWidgets.QAction(_("Show Hidden Files"), self)
-        self.action_hidden.setShortcuts(shortcuts.hidden_files)
-        self.action_hidden.setCheckable(True)
-        self.action_hidden.setChecked(self.pane.view.proxy.show_hidden)
-        self.action_hidden.toggled.connect(self.on_action_hidden)
 
     def _create_menus(self):
         app_menu = self.menuBar().addMenu(_("Ufo"))
         app_menu.addAction(self.action_new)
         # new tab
-        # close / quit
+        app_menu.addAction(self.action_close)
 
         file_menu = self.menuBar().addMenu(_("File"))
         file_menu.addAction(self.action_new_folder)
@@ -65,7 +63,7 @@ class MainWindow(QtWidgets.QMainWindow):
 
         ## View
         view_menu = self.menuBar().addMenu(_("View"))
-        view_menu.addAction(self.action_hidden)
+        view_menu.addAction(self.pane.view.action_hidden)
         # Directory tree
         # File preview
         # Split / unsplit
@@ -84,6 +82,3 @@ class MainWindow(QtWidgets.QMainWindow):
         self.pane.view.proxy.invalidate()
         pindex = self.pane.view.proxy.mapFromSource(index)
         self.pane.view.setCurrentIndex(pindex)  # TODO: why doesn't it work?
-
-    def on_action_hidden(self, show):
-        self.pane.view.proxy.show_hidden = show

@@ -19,12 +19,12 @@ class FileView(QtWidgets.QTreeView):
     def __init__(self, model, parent=None):
         super().__init__(parent)
 
-        self._create_actions()
-
         self.proxy = FileProxyModel()
         self.proxy.setSourceModel(model)
-        self.setModel(self.proxy)
 
+        self._create_actions()
+
+        self.setModel(self.proxy)
         self.setSortingEnabled(True)
         self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setIconSize(QtCore.QSize(32, 32))
@@ -41,6 +41,12 @@ class FileView(QtWidgets.QTreeView):
         self.action_delete.setShortcuts(shortcuts.delete)
         self.action_delete.triggered.connect(self.delete_selected_files)
         self.action_delete.setEnabled(False)
+
+        self.action_hidden = QtWidgets.QAction(_("Show Hidden Files"), self)
+        self.action_hidden.setShortcuts(shortcuts.hidden_files)
+        self.action_hidden.setCheckable(True)
+        self.action_hidden.setChecked(self.proxy.show_hidden)
+        self.action_hidden.toggled.connect(self.show_hide_hidden_files)
 
     def selectionChanged(self, selected, deselected):
         super().selectionChanged(selected, deselected)
@@ -77,3 +83,6 @@ class FileView(QtWidgets.QTreeView):
         selection = self.proxy.mapSelectionToSource(self.selectionModel().selection())
         self.proxy.sourceModel().delete_files(selection.indexes())
         self.proxy.invalidate()
+
+    def show_hide_hidden_files(self, show):
+        self.proxy.show_hidden = show

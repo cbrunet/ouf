@@ -4,6 +4,7 @@ from PyQt5 import QtGui
 
 # Ufo
 new_window = QtGui.QKeySequence(_("Ctrl+N"))
+close_window = [QtGui.QKeySequence(_("Ctrl+W")), QtGui.QKeySequence(_("Ctrl+Q"))]
 
 # File
 new_folder = QtGui.QKeySequence(_("Ctrl+Shift+N"))
