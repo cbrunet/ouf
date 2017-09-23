@@ -11,8 +11,8 @@ import os.path
 
 # TODO: icons
 # TODO: color symlinks / not readable / hidden
-# TODO: handle links
 # TODO: read .desktop files!
+# TODO: columns: mime, moddate, size, permissions, (crdate, user, group, hardlinks)
 
 
 class FileModel(QtCore.QAbstractItemModel):
@@ -138,6 +138,7 @@ class FileModel(QtCore.QAbstractItemModel):
 
     def delete_files(self, indexes):
         #TODO: undo / redo
+        #TODO: trash handling
 
         paths = [index.data(Qt.UserRole) for index in indexes if index.isValid()]
         for path in paths:

@@ -12,7 +12,10 @@ class FileSystemItem(FileModelItem):
 
     def __init__(self, path, parent=None):
         super().__init__(FileItemType.filesystem, path, parent)
-        self._stat = os.stat(self.path)
+        try:
+            self._stat = os.stat(self.path)
+        except FileNotFoundError:
+            self._stat = None
         self._is_link = os.path.islink(self.path)
 
     def data(self, role=Qt.DisplayRole):
@@ -33,7 +36,7 @@ class FileSystemItem(FileModelItem):
         return []
 
     def isDir(self):
-        return stat.S_ISDIR(self._stat.st_mode)
+        return self._stat is not None and stat.S_ISDIR(self._stat.st_mode)
 
     def isLink(self):
         return self._is_link
@@ -42,4 +45,4 @@ class FileSystemItem(FileModelItem):
         return self.path == os.path.expanduser('~')
 
     def isExecutable(self):
-        return stat.S_IXUSR & self._stat.st_mode
+        return os.access(self.path, os.X_OK)

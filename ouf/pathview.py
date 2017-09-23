@@ -7,6 +7,7 @@ import os.path
 
 # TODO: back and forth buttons (history)
 # TODO: location icon
+# TODO: allow to go to hidden path
 
 
 class PathView(QtWidgets.QWidget):
