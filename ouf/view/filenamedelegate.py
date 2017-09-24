@@ -1,11 +1,13 @@
 from PyQt5 import QtWidgets
 
 
+# TODO: do not select extension
+
+
 class FileNameDelegate(QtWidgets.QStyledItemDelegate):
 
     def createEditor(self, parent, option, index):
         self._editor = QtWidgets.QLineEdit(parent)
-
         return self._editor
 
     def setEditorData(self, editor, index):

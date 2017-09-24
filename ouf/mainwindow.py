@@ -56,8 +56,9 @@ class MainWindow(QtWidgets.QMainWindow):
         # select all / none
 
         go_menu = self.menuBar().addMenu(_("Go"))
-        # back
-        # forward
+        # TODO: open
+        go_menu.addAction(self.pane.path_view.back_action)
+        go_menu.addAction(self.pane.path_view.forth_action)
         go_menu.addAction(self.pane.path_view.up_action)
         go_menu.addAction(self.pane.path_view.home_action)
 
