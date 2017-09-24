@@ -43,6 +43,31 @@ class FileModel(QtCore.QAbstractItemModel):
         if index.isValid():
             return index.internalPointer().data(role)
 
+    def setData(self, index, value, role=Qt.EditRole):
+
+        if role == Qt.EditRole and index.column() == 0:
+            # Rename file
+            path = index.data(Qt.UserRole)
+            newpath = os.path.join(os.path.dirname(path), value)
+            if os.path.exists(newpath):
+                return False
+
+            try:
+                os.rename(path, newpath)
+            except OSError:
+                return False
+
+            parent = index.parent().internalPointer()
+            parent.path_list[index.row()] = newpath
+            item = index.internalPointer()
+            item.path = newpath
+            self._files[newpath] = item
+            del self._files[path]
+
+            self.dataChanged.emit(index, index)
+            return True
+        return False
+
     def fetchMore(self, parent):
         if parent.isValid():
             last = len(parent.internalPointer().path_list) - 1
@@ -50,7 +75,10 @@ class FileModel(QtCore.QAbstractItemModel):
             self.endInsertRows()
 
     def flags(self, index):
-        return Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        f = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        if index.column() == 0:  # and is editable...
+            f |= Qt.ItemIsEditable
+        return f
 
     def hasChildren(self, parent=QtCore.QModelIndex()):
         if parent.isValid():

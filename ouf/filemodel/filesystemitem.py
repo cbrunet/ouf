@@ -33,6 +33,8 @@ class FileSystemItem(FileModelItem):
                 return list(os.path.join(self.path, f) for f in sorted(os.listdir(self.path)))
             except PermissionError:
                 pass
+            except FileNotFoundError:
+                pass
         return []
 
     def isDir(self):

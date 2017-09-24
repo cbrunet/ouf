@@ -10,6 +10,7 @@ import sys
 # TODO: modifiers to open in new window
 # TODO: switch icons / tree
 # TODO: modify icon size
+from ouf.view.filenamedelegate import FileNameDelegate
 
 
 class FileView(QtWidgets.QTreeView):
@@ -28,11 +29,15 @@ class FileView(QtWidgets.QTreeView):
         self.setSortingEnabled(True)
         self.sortByColumn(0, QtCore.Qt.AscendingOrder)
         self.setIconSize(QtCore.QSize(32, 32))
-        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setSelectionMode(self.ExtendedSelection)
+        self.setSelectionBehavior(self.SelectRows)
         self.setUniformRowHeights(True)
         self.setAllColumnsShowFocus(True)
         # self.setAnimated(True)
+        self.setEditTriggers(self.SelectedClicked | self.EditKeyPressed)
+
+        self._file_name_delegate = FileNameDelegate(self)
+        self.setItemDelegateForColumn(0, self._file_name_delegate)
 
         self.activated.connect(self.open_action)
 

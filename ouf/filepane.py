@@ -1,8 +1,8 @@
 
-from ouf.fileview import FileView
-from ouf.pathview import PathView
-
 from PyQt5 import QtWidgets
+
+from ouf.pathview import PathView
+from ouf.view.fileview import FileView
 
 
 class FilePane(QtWidgets.QWidget):
