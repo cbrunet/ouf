@@ -1,12 +1,12 @@
+import subprocess
+import sys
 
-from ouf import shortcuts
+from PyQt5 import QtCore, QtGui, QtWidgets
 from ouf.filemodel.filemodel import FileModel
 from ouf.filepane import FilePane
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from ouf import shortcuts
 
-import subprocess
-import sys
 
 # TODO: save/restore windows state
 

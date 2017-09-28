@@ -2,3 +2,4 @@ fastnumbers
 natsort
 PyICU
 PyQt5
+pytest

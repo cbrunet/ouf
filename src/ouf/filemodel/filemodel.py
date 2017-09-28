@@ -1,12 +1,11 @@
+import os.path
 import shutil
-
-from ouf.filemodel.filemodelitem import FileItemType
-from ouf.filemodel.filesystemitem import FileSystemItem
 
 from PyQt5 import QtCore
 from PyQt5.QtCore import Qt
 
-import os.path
+from ouf.filemodel.filemodelitem import FileItemType
+from ouf.filemodel.filesystemitem import FileSystemItem
 
 
 # TODO: icons
@@ -75,9 +74,14 @@ class FileModel(QtCore.QAbstractItemModel):
             self.endInsertRows()
 
     def flags(self, index):
-        f = Qt.ItemIsSelectable | Qt.ItemIsEnabled
+        f = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
         if index.column() == 0:  # and is editable...
             f |= Qt.ItemIsEditable
+        item = index.internalPointer()
+        if item.isDir():
+            f |= Qt.ItemIsDropEnabled
+        else:
+            f |= Qt.ItemNeverHasChildren
         return f
 
     def hasChildren(self, parent=QtCore.QModelIndex()):
@@ -127,6 +131,74 @@ class FileModel(QtCore.QAbstractItemModel):
             return 1
             return len(FileItemType)
 
+    def mimeTypes(self):
+        return ["text/uri-list"]
+
+    def mimeData(self, indexes):
+        data = QtCore.QMimeData()
+        data.setUrls([QtCore.QUrl.fromLocalFile(index.data(Qt.UserRole)) for index in indexes])
+        return data
+
+    def supportedDragActions(self):
+        return Qt.CopyAction | Qt.MoveAction | Qt.LinkAction
+
+    def supportedDropActions(self):
+        return Qt.CopyAction | Qt.MoveAction | Qt.LinkAction
+
+    def canDropMimeData(self, data, action, row, column, parent):
+        return True
+
+    def _move_file(self, source, dest_index):
+        source_dir, filename = os.path.split(source)
+        dest_dir = dest_index.data(Qt.UserRole)
+        if source_dir == dest_dir:
+            return
+
+        dest_path = os.path.join(dest_dir, filename)
+        if os.path.exists(dest_path):
+            # TODO: handle name conflicts
+            return
+
+        source_index = self.pathIndex(source)
+        self.beginMoveRows(source_index.parent(), source_index.row(), source_index.row(),
+                           dest_index, self.rowCount(dest_index))
+
+        item = source_index.internalPointer()
+        item.path = dest_path
+        del self._files[source]
+        self._files[dest_path] = item
+
+        del self._files[source_dir].path_list[source_index.row()]
+        self._files[dest_dir].append(filename)
+
+        os.rename(source, dest_path)
+        self.endMoveRows()
+
+    def _copy_file(self, source, dest):
+        print("copy {} to {}".format(source, dest))
+
+    def _link_file(self, source, dest):
+        pass
+
+    def dropMimeData(self, data, action, row, column, parent):
+        destination_index = self.index(row, column, parent)
+
+        if action == Qt.MoveAction:
+            do_action = self._move_file
+        elif action == Qt.CopyAction:
+            do_action = self._copy_file
+        elif action == Qt.LinkAction:
+            do_action = self._link_file
+        else:
+            return False
+
+        for url in data.urls():
+            path = url.toLocalFile()
+            if path:
+                do_action(path, destination_index)
+
+        return True
+
     def pathIndex(self, path):
         """Create index from path
 
@@ -159,7 +231,7 @@ class FileModel(QtCore.QAbstractItemModel):
         os.mkdir(folder_name)
         parent = parent_index.internalPointer()
         item = self._addItem(FileItemType.filesystem, folder_name)
-        parent.path_list.append(folder_name)
+        parent.append(folder_name)
         self.endInsertRows()
 
         return self.createIndex(row, 0, item)

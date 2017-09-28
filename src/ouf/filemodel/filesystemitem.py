@@ -1,11 +1,10 @@
 
-
-from ouf.filemodel.filemodelitem import FileModelItem, FileItemType
+import os
+import stat
 
 from PyQt5.QtCore import Qt
 
-import os
-import stat
+from ouf.filemodel.filemodelitem import FileModelItem, FileItemType
 
 
 class FileSystemItem(FileModelItem):

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 
-from ouf import version
-
-from PyQt5 import QtCore, QtWidgets
-
 import argparse
 import gettext
 import sys
+
+from PyQt5 import QtCore, QtWidgets
+
+from ouf import version
 
 
 # TODO: icon factory

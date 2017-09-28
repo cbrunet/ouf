@@ -1,8 +1,8 @@
-from ouf import shortcuts
-
-from PyQt5 import QtCore, QtGui, QtWidgets
-
 import os.path
+
+from PyQt5 import QtGui, QtWidgets
+
+from ouf import shortcuts
 
 
 # TODO: location icon

@@ -1,16 +1,16 @@
-from ouf import shortcuts
-from ouf.filemodel.proxymodel import FileProxyModel
-
-from PyQt5 import QtCore, QtWidgets
-
 import os
 import subprocess
 import sys
 
+from PyQt5 import QtCore, QtWidgets
+
+from ouf.filemodel.proxymodel import FileProxyModel
+from ouf.view.filenamedelegate import FileNameDelegate
+from ouf import shortcuts
+
 # TODO: modifiers to open in new window
 # TODO: switch icons / tree
 # TODO: modify icon size
-from ouf.view.filenamedelegate import FileNameDelegate
 
 
 class FileView(QtWidgets.QTreeView):
@@ -36,6 +36,12 @@ class FileView(QtWidgets.QTreeView):
         # self.setAnimated(True)
         self.setEditTriggers(self.SelectedClicked | self.EditKeyPressed)
 
+        self.setDefaultDropAction(QtCore.Qt.MoveAction)
+        self.setDragDropMode(self.DragDrop)
+        self.setDragDropOverwriteMode(False)
+        self.setDragEnabled(True)
+        self.setAutoExpandDelay(200)
+
         self._file_name_delegate = FileNameDelegate(self)
         self.setItemDelegateForColumn(0, self._file_name_delegate)
 
@@ -56,6 +62,32 @@ class FileView(QtWidgets.QTreeView):
     def selectionChanged(self, selected, deselected):
         super().selectionChanged(selected, deselected)
         self.action_delete.setEnabled(bool(self.selectedIndexes()))
+
+    def dragEnterEvent(self, event):
+        if event.mimeData().hasUrls():
+            if any(u.toLocalFile() for u in event.mimeData().urls()):
+                event.accept()
+                return
+        event.ignore()
+
+    def dragLeaveEvent(self, event):
+        pass
+
+    def dragMoveEvent(self, event):
+        super().dragMoveEvent(event)
+        if event.keyboardModifiers() & QtCore.Qt.CTRL:
+            if event.keyboardModifiers() & QtCore.Qt.SHIFT:
+                event.setDropAction(QtCore.Qt.LinkAction)
+            else:
+                event.setDropAction(QtCore.Qt.CopyAction)
+        else:
+            event.setDropAction(QtCore.Qt.MoveAction)
+        event.accept()
+
+    def dropEvent(self, event):
+        index = self.indexAt(event.pos())
+        # index = self.proxy.mapToSource(pindex)
+        self.model().dropMimeData(event.mimeData(), event.dropAction(), index.row(), index.column(), index.parent())
 
     def open_action(self, index):
         """

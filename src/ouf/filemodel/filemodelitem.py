@@ -1,12 +1,11 @@
-from ouf.filemodel import SortRole
+import os.path
+from enum import IntEnum
 
+import natsort as ns
 from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
 
-import natsort as ns
-
-from enum import IntEnum
-import os.path
+from ouf.filemodel import SortRole
 
 
 class FileItemType(IntEnum):
@@ -33,6 +32,10 @@ class FileModelItem(QtCore.QObject):
         if self._path_list is None:
             self._path_list = self.fetchPathList()
         return self._path_list
+
+    def append(self, filename):
+        if filename not in self.path_list:
+            self.path_list.append(filename)
 
     def childPath(self, row):
         try:

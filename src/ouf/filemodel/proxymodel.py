@@ -1,7 +1,8 @@
 
+from PyQt5 import QtCore
+
 from ouf.filemodel import SortRole
 
-from PyQt5 import QtCore
 
 # TODO: show/hide backups files (end with ~)
 # TODO: dir first
