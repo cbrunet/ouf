@@ -43,18 +43,19 @@ class FileModelItem(QtCore.QObject):
         except IndexError:
             return None
 
-    def data(self, role=Qt.DisplayRole):
-        if role == Qt.DisplayRole:
-            return os.path.basename(self.path)
+    def data(self, column, role=Qt.DisplayRole):
+        if column == 0:
+            if role == Qt.DisplayRole:
+                return os.path.basename(self.path)
 
-        if role == Qt.DecorationRole:
-            return self.getIcon()
+            if role == Qt.DecorationRole:
+                return self.getIcon()
 
-        if role == Qt.UserRole:
-            return self.path
+            if role == Qt.UserRole:
+                return self.path
 
-        if role == SortRole:
-            return self._alphanum
+            if role == SortRole:
+                return self._alphanum
 
     def isLoaded(self):
         return self._path_list is not None

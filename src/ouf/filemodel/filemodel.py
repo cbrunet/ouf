@@ -19,6 +19,7 @@ class FileModel(QtCore.QAbstractItemModel):
     FileItem = {FileItemType.filesystem: FileSystemItem}
 
     ROOT_PATH = '/'
+    HEADERS = [_("Filename"), _("Size")]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -36,11 +37,11 @@ class FileModel(QtCore.QAbstractItemModel):
             return False
 
     def columnCount(self, parent=QtCore.QModelIndex()):
-        return 1
+        return len(self.HEADERS)
 
     def data(self, index, role=Qt.DisplayRole):
         if index.isValid():
-            return index.internalPointer().data(role)
+            return index.internalPointer().data(index.column(), role)
 
     def setData(self, index, value, role=Qt.EditRole):
 
@@ -94,8 +95,7 @@ class FileModel(QtCore.QAbstractItemModel):
     def headerData(self, section, orientation, role=Qt.DisplayRole):
         if role == Qt.DisplayRole:
             if orientation == Qt.Horizontal:
-                if section == 0:
-                    return _("Filename")
+                return self.HEADERS[section]
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
         if parent.isValid():

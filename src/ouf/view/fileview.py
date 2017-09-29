@@ -105,6 +105,9 @@ class FileView(QtWidgets.QTreeView):
                 self.setRootIndex(index)
                 #TODO: unselect
                 self.current_path_changed.emit(path)
+                QtCore.QCoreApplication.processEvents()  # Ensure the new path is set before resizing
+                self.resizeColumnToContents(0)
+
             else:
                 # TODO: open file / exec process / etc.
                 if sys.platform.startswith('linux'):

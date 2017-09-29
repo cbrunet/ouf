@@ -23,7 +23,7 @@ def parseargs():
 
 
 def main():
-    gettext.install(version.name)
+    gettext.install(version.name, names=['ngettext'])
 
     from ouf.mainwindow import MainWindow
 

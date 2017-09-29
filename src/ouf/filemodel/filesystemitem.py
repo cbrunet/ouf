@@ -5,6 +5,7 @@ import stat
 from PyQt5.QtCore import Qt
 
 from ouf.filemodel.filemodelitem import FileModelItem, FileItemType
+from ouf.util import humanize
 
 
 class FileSystemItem(FileModelItem):
@@ -17,14 +18,22 @@ class FileSystemItem(FileModelItem):
             self._stat = None
         self._is_link = os.path.islink(self.path)
 
-    def data(self, role=Qt.DisplayRole):
-        if role == Qt.DisplayRole:
-            if self.isRoot():
-                return _("File System")
-        if role == Qt.UserRole:
-            if self.isLink():
-                return os.path.join(os.path.dirname(self.path), os.readlink(self.path))
-        return super().data(role)
+    def data(self, column, role=Qt.DisplayRole):
+        if column == 0:
+            if role == Qt.DisplayRole:
+                if self.isRoot():
+                    return _("File System")
+            if role == Qt.UserRole:
+                if self.isLink():
+                    return os.path.join(os.path.dirname(self.path), os.readlink(self.path))
+        elif column == 1:
+            if role == Qt.DisplayRole:
+                if self.isDir():
+                    n = len(self.path_list)
+                    return ngettext("{} file", "{} files", n).format(n)
+                else:
+                    return humanize(self._stat[stat.ST_SIZE])
+        return super().data(column, role)
 
     def fetchPathList(self):
         if self.isDir():
