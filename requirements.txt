@@ -3,3 +3,4 @@ natsort
 PyICU
 PyQt5
 pytest
+pytest-cov
