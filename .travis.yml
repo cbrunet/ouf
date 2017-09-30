@@ -8,4 +8,7 @@ install:
 
 script:
   - pytest
-  
+  - pytest --cov=ouf
+
+after_success:
+  - coveralls
