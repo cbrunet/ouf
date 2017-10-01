@@ -16,12 +16,10 @@ class FileItemType(IntEnum):
     favorite = 3
 
 
-class FileModelItem(QtCore.QObject):
+class FileModelItem(object):
 
-    def __init__(self, type, path, parent=None):
-        super().__init__(parent)
-
-        self.type = type
+    def __init__(self, itemtype, path):
+        self.itemtype = itemtype
         self.path = path
 
         self._path_list = None

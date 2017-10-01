@@ -45,6 +45,28 @@ def test_move_file(fake_filesystem):
     assert model.rowCount(dir_b_index) == 2
 
 
+def test_copy_file(fake_filesystem):
+    model = FileModel()
+
+    dir_b_index = model.pathIndex(fake_filesystem.join("dir B"))
+
+    # Copy file
+    model._copy_file(fake_filesystem.join("dir A", "file a"), dir_b_index)
+    assert fake_filesystem.join("dir A", "file a").exists()
+    assert fake_filesystem.join("dir B", "file a").exists()
+
+
+def test_copy_directory(fake_filesystem):
+    model = FileModel()
+
+    dir_a_index = model.pathIndex(fake_filesystem.join("dir A"))
+
+    # Copy directory
+    model._copy_file(fake_filesystem.join("dir B"), dir_a_index)
+    assert fake_filesystem.join("dir A", "dir B", "file d").exists()
+    assert fake_filesystem.join("dir B", "file d").exists()
+
+
 def test_delete_files(fake_filesystem):
     model = FileModel()
 

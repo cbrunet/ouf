@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os.path
 import shutil
 
@@ -104,7 +105,7 @@ class FileModel(QtCore.QAbstractItemModel):
             if path is None:
                 # invalid row
                 return QtCore.QModelIndex()
-            item_type = parent_item.type
+            item_type = parent_item.itemtype
             item = self._addItem(item_type, path)
         else:
             item = self._addItem(row, self.ROOT_PATH)
@@ -116,7 +117,7 @@ class FileModel(QtCore.QAbstractItemModel):
             if item.path == self.ROOT_PATH:
                 return QtCore.QModelIndex()
             parent_path = os.path.dirname(item.path)
-            parent_item = self._addItem(item.type, parent_path)
+            parent_item = self._addItem(item.itemtype, parent_path)
             try:
                 row = parent_item.path_list.index(item.path)
             except ValueError:
@@ -174,8 +175,31 @@ class FileModel(QtCore.QAbstractItemModel):
         os.rename(source, dest_path)
         self.endMoveRows()
 
-    def _copy_file(self, source, dest):
-        print("copy {} to {}".format(source, dest))
+    def _copy_file(self, source, dest_index):
+        source_dir, filename = os.path.split(source)
+        dest_dir = dest_index.data(Qt.UserRole)
+        if source_dir == dest_dir:
+            return  # TODO: duplicate on parent
+
+        dest_path = os.path.join(dest_dir, filename)
+        if os.path.exists(dest_path):
+            # TODO: handle name conflicts
+            return
+
+        source_index = self.pathIndex(source)
+        self.beginInsertRows(dest_index, self.rowCount(dest_index), self.rowCount(dest_index))
+
+        item = deepcopy(source_index.internalPointer())
+        item.path = dest_path
+        self._files[dest_path] = item
+
+        self._files[dest_dir].append(filename)
+
+        if os.path.isfile(source):
+            shutil.copy2(source, dest_dir)
+        else:
+            shutil.copytree(source, dest_path, symlinks=True)
+        self.endInsertRows()
 
     def _link_file(self, source, dest):
         pass

@@ -10,8 +10,8 @@ from ouf.util import humanize
 
 class FileSystemItem(FileModelItem):
 
-    def __init__(self, path, parent=None):
-        super().__init__(FileItemType.filesystem, path, parent)
+    def __init__(self, path):
+        super().__init__(FileItemType.filesystem, path)
         try:
             self._stat = os.stat(self.path)
         except FileNotFoundError:
