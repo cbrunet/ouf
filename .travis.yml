@@ -3,7 +3,7 @@ python:
   - "3.6"
 
 env:
-  - TOXENV=py36
+  - TOXENV=py36,cov
 
 install:
   - pip install tox
