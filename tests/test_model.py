@@ -28,6 +28,18 @@ def test_create_new_directory(tmpdir):
         assert index.row() == i  # The row number is the ith element we created
 
 
+def test_rename_file(fake_filesystem):
+    model = FileModel()
+
+    file_a_index = model.pathIndex(fake_filesystem.join("dir A", "file a"))
+    model.setData(file_a_index, "file e")
+
+    assert model.rowCount(file_a_index.parent()) == 3
+    assert not fake_filesystem.join("dir A", "file a").exists()
+    assert fake_filesystem.join("dir A", "file e").exists()
+    assert model.data(file_a_index, QtCore.Qt.UserRole) == fake_filesystem.join("dir A", "file e")
+
+
 def test_move_file(fake_filesystem):
     model = FileModel()
 
