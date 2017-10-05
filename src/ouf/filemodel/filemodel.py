@@ -71,11 +71,16 @@ class FileModel(QtCore.QAbstractItemModel):
 
     def fetchMore(self, parent):
         if parent.isValid():
-            last = len(parent.internalPointer().path_list) - 1
+            path_list = parent.internalPointer().fetchPathList()
+            last = len(path_list) - 1
             self.beginInsertRows(parent, 0, last)
+            parent.internalPointer()._path_list = path_list
             self.endInsertRows()
 
     def flags(self, index):
+        if not index.isValid():
+            return
+
         f = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
         if index.column() == 0:  # and is editable...
             f |= Qt.ItemIsEditable
@@ -87,6 +92,8 @@ class FileModel(QtCore.QAbstractItemModel):
         return f
 
     def hasChildren(self, parent=QtCore.QModelIndex()):
+        if parent.column() != 0:
+            return False
         if parent.isValid():
             parent_item = parent.internalPointer()
             if not parent_item.isLoaded():
@@ -99,6 +106,11 @@ class FileModel(QtCore.QAbstractItemModel):
                 return self.HEADERS[section]
 
     def index(self, row, column, parent=QtCore.QModelIndex()):
+        if column < 0 or column >= self.columnCount(parent):
+            return QtCore.QModelIndex()
+        if row < 0 or row >= self.rowCount(parent):
+            return QtCore.QModelIndex()
+
         if parent.isValid():
             parent_item = parent.internalPointer()
             path = parent_item.childPath(row)
@@ -117,15 +129,18 @@ class FileModel(QtCore.QAbstractItemModel):
             if item.path == self.ROOT_PATH:
                 return QtCore.QModelIndex()
             parent_path = os.path.dirname(item.path)
-            parent_item = self._addItem(item.itemtype, parent_path)
-            try:
-                row = parent_item.path_list.index(item.path)
-            except ValueError:
-                return QtCore.QModelIndex()
-            return self.createIndex(row, 0, parent_item)
+            return self.pathIndex(parent_path)
+            # parent_item = self._addItem(item.itemtype, parent_path)
+            # try:
+            #     row = parent_item.path_list.index(item.path)
+            # except ValueError:
+            #     return QtCore.QModelIndex()
+            # return self.createIndex(row, 0, parent_item)
         return QtCore.QModelIndex()
 
     def rowCount(self, parent=QtCore.QModelIndex()):
+        if parent.column() != 0:
+            return 0
         if parent.isValid():
             return parent.internalPointer().rowCount()
         else:

@@ -16,6 +16,11 @@ def fake_filesystem(tmpdir_factory):
     return tmpdir
 
 
+def test_model(qtmodeltester):
+    model = FileModel()
+    qtmodeltester.check(model)
+
+
 def test_create_new_directory(tmpdir):
     model = FileModel()
 
