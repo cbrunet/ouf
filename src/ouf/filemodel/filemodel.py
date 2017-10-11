@@ -92,9 +92,9 @@ class FileModel(QtCore.QAbstractItemModel):
         return f
 
     def hasChildren(self, parent=QtCore.QModelIndex()):
-        if parent.column() != 0:
-            return False
         if parent.isValid():
+            if parent.column() != 0:
+                return False
             parent_item = parent.internalPointer()
             if not parent_item.isLoaded():
                 return parent_item.isDir()
@@ -139,9 +139,9 @@ class FileModel(QtCore.QAbstractItemModel):
         return QtCore.QModelIndex()
 
     def rowCount(self, parent=QtCore.QModelIndex()):
-        if parent.column() != 0:
-            return 0
         if parent.isValid():
+            if parent.column() != 0:
+                return 0
             return parent.internalPointer().rowCount()
         else:
             return 1

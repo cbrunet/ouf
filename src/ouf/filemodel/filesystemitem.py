@@ -32,7 +32,10 @@ class FileSystemItem(FileModelItem):
                     n = len(self.path_list)
                     return ngettext("{} file", "{} files", n).format(n)
                 else:
-                    return humanize(self._stat[stat.ST_SIZE])
+                    if self._stat:
+                        return humanize(self._stat[stat.ST_SIZE])
+                    else:
+                        return _("Unknown")
         return super().data(column, role)
 
     def fetchPathList(self):

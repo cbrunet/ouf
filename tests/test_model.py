@@ -16,8 +16,18 @@ def fake_filesystem(tmpdir_factory):
     return tmpdir
 
 
+class LimitedFileModel(FileModel):
+
+    """Limit FileSystem depth, to prevent infinite recursion in tests."""
+
+    def canFetchMore(self, parent):
+        if parent.isValid() and parent.parent().isValid():
+            return False
+        return super().canFetchMore(parent)
+
+
 def test_model(qtmodeltester):
-    model = FileModel()
+    model = LimitedFileModel()
     qtmodeltester.check(model)
 
 

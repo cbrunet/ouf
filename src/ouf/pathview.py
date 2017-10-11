@@ -3,6 +3,7 @@ import os.path
 from PyQt5 import QtGui, QtWidgets
 
 from ouf import shortcuts
+from ouf.filemodel.filemodel import FileModel
 
 
 # TODO: location icon
@@ -10,6 +11,8 @@ from ouf import shortcuts
 
 
 class PathView(QtWidgets.QWidget):
+
+    ROOT_PATH = FileModel.ROOT_PATH
 
     def __init__(self, path, view, parent=None):
         super().__init__(parent)
@@ -111,7 +114,7 @@ class PathView(QtWidgets.QWidget):
             self._view.open_action(self._view.proxy.mapFromSource(index))
 
     def go_up(self):
-        parent = '' if self.path == self._view.model().sourceModel().ROOT_PATH else os.path.dirname(self.path)
+        parent = '' if self.path == self.ROOT_PATH else os.path.dirname(self.path)
         self.go_to(parent)
 
     def go_home(self):
@@ -121,6 +124,7 @@ class PathView(QtWidgets.QWidget):
         """Update displayed path, but do not trigger action.
 
         Called when the path changed in the view."""
-        path = path.rstrip(os.sep)
+        if path != self.ROOT_PATH:
+            path = path.rstrip(os.sep)
         self.path = path
         return self.path == os.path.expanduser(path)
