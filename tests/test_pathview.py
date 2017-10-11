@@ -1,5 +1,4 @@
 import pytest
-from PyQt5 import QtCore
 from .test_model import fake_filesystem
 
 from ouf.filemodel.filemodel import FileModel
