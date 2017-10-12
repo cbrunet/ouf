@@ -1,4 +1,4 @@
-
+import mimetypes
 import os
 import stat
 
@@ -26,16 +26,27 @@ class FileSystemItem(FileModelItem):
             if role == Qt.UserRole:
                 if self.isLink():
                     return os.path.join(os.path.dirname(self.path), os.readlink(self.path))
+
         elif column == 1:
             if role == Qt.DisplayRole:
                 if self.isDir():
-                    n = len(self.path_list)
-                    return ngettext("{} file", "{} files", n).format(n)
+                    if self.isLoaded():
+                        n = len(self.path_list)
+                        return ngettext("{} file", "{} files", n).format(n)
+                    return ""
                 else:
                     if self._stat:
                         return humanize(self._stat[stat.ST_SIZE])
                     else:
                         return _("Unknown")
+
+        elif column == 2:
+            if role == Qt.DisplayRole:
+                mime_type, encoding = mimetypes.guess_type(self.data(0, Qt.DisplayRole), strict=False)
+                if mime_type is None and self.isDir():
+                    return "inode/directory"
+                return mime_type
+
         return super().data(column, role)
 
     def fetchPathList(self):
