@@ -4,7 +4,7 @@ import stat
 
 from PyQt5.QtCore import Qt
 
-from ouf.filemodel.filemodelitem import FileModelItem, FileItemType
+from ouf.filemodel.filemodelitem import FileModelItem, FileItemType, SortRole
 from ouf.util import humanize
 
 
@@ -40,11 +40,26 @@ class FileSystemItem(FileModelItem):
                     else:
                         return _("Unknown")
 
+            elif role == SortRole:
+                if self.isDir():
+                    if self.isLoaded():
+                        return "D", len(self.path_list)
+                    else:
+                        return "D", 0
+                else:
+                    if self._stat:
+                        return "F", self._stat[stat.ST_SIZE]
+                    else:
+                        return "F", 0
+
         elif column == 2:
-            if role == Qt.DisplayRole:
+            if role == Qt.DisplayRole or role == SortRole:
                 mime_type, encoding = mimetypes.guess_type(self.data(0, Qt.DisplayRole), strict=False)
-                if mime_type is None and self.isDir():
-                    return "inode/directory"
+                if mime_type is None:
+                    if self.isDir():
+                        mime_type = "inode/directory"
+                    else:
+                        mime_type = ""
                 return mime_type
 
         return super().data(column, role)
