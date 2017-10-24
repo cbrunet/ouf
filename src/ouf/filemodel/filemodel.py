@@ -167,7 +167,7 @@ class FileModel(QtCore.QAbstractItemModel):
     def _move_file(self, source, dest_index):
         source_dir, filename = os.path.split(source)
         dest_dir = dest_index.data(Qt.UserRole)
-        if source_dir == dest_dir:
+        if not dest_dir or source_dir == dest_dir:
             return
 
         dest_path = os.path.join(dest_dir, filename)

@@ -6,10 +6,10 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtCore import Qt
 
 from ouf.filemodel import SortRole
+from ouf.iconfactory import icon_factory
 
 
 class FileItemType(IntEnum):
-
     filesystem = 0
     calendar = 1
     category = 2
@@ -17,13 +17,12 @@ class FileItemType(IntEnum):
 
 
 class FileModelItem(object):
-
     def __init__(self, itemtype, path):
         self.itemtype = itemtype
         self.path = path
 
         self._path_list = None
-        self._alphanum = ns.natsort_key(os.path.basename(path), alg=ns.I|ns.LA|ns.IC) if path else ''
+        self._alphanum = ns.natsort_key(os.path.basename(path), alg=ns.I | ns.LA | ns.IC) if path else ''
 
     @property
     def path_list(self):
@@ -67,21 +66,8 @@ class FileModelItem(object):
     def isRoot(self):
         return self.path == '/'
 
+    def mimetype(self):
+        return self.data(2, role=Qt.DisplayRole)
+
     def getIcon(self):
-        # if self.isRoot():
-        #     return QtGui.QIcon.fromTheme('start-here')
-
-        if self.isHome():
-            return QtGui.QIcon.fromTheme('user-home')
-
-        # if self.isDesktop():
-        #     return QtGui.QIcon.fromTheme('user-desktop')
-
-        if self.isDir():
-            return QtGui.QIcon.fromTheme('folder')  # TODO: add fallback
-
-        # if self.isExecutable():
-        #     return QtGui.QIcon.fromTheme('application-x-executable')
-
-        return QtGui.QIcon.fromTheme('text-x-generic')
-
+        return icon_factory(self)
