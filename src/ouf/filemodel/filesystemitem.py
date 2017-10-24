@@ -1,87 +1,16 @@
-import mimetypes
-import os
-import stat
-
 from PyQt5.QtCore import Qt
 
-from ouf.filemodel.filemodelitem import FileModelItem, FileItemType, SortRole
-from ouf.util import humanize
+from ouf.filemodel.filemodelitem import FileModelItem, FileItemType
 
 
 class FileSystemItem(FileModelItem):
 
     def __init__(self, path):
         super().__init__(FileItemType.filesystem, path)
-        try:
-            self._stat = os.stat(self.path)
-        except FileNotFoundError:
-            self._stat = None
-        self._is_link = os.path.islink(self.path)
 
     def data(self, column, role=Qt.DisplayRole):
         if column == 0:
             if role == Qt.DisplayRole:
-                if self.isRoot():
+                if self.is_root:
                     return _("File System")
-            if role == Qt.UserRole:
-                if self.isLink():
-                    return os.path.join(os.path.dirname(self.path), os.readlink(self.path))
-
-        elif column == 1:
-            if role == Qt.DisplayRole:
-                if self.isDir():
-                    if self.isLoaded():
-                        n = len(self.path_list)
-                        return ngettext("{} file", "{} files", n).format(n)
-                    return ""
-                else:
-                    if self._stat:
-                        return humanize(self._stat[stat.ST_SIZE])
-                    else:
-                        return _("Unknown")
-
-            elif role == SortRole:
-                if self.isDir():
-                    if self.isLoaded():
-                        return "D", len(self.path_list)
-                    else:
-                        return "D", 0
-                else:
-                    if self._stat:
-                        return "F", self._stat[stat.ST_SIZE]
-                    else:
-                        return "F", 0
-
-        elif column == 2:
-            if role == Qt.DisplayRole or role == SortRole:
-                mime_type, encoding = mimetypes.guess_type(self.data(0, Qt.DisplayRole), strict=False)
-                if mime_type is None:
-                    if self.isDir():
-                        mime_type = "inode/directory"
-                    else:
-                        mime_type = ""
-                return mime_type
-
         return super().data(column, role)
-
-    def fetchPathList(self):
-        if self.isDir():
-            try:
-                return list(os.path.join(self.path, f) for f in sorted(os.listdir(self.path)))
-            except PermissionError:
-                pass
-            except FileNotFoundError:
-                pass
-        return []
-
-    def isDir(self):
-        return self._stat is not None and stat.S_ISDIR(self._stat.st_mode)
-
-    def isLink(self):
-        return self._is_link
-
-    def isHome(self):
-        return self.path == os.path.expanduser('~')
-
-    def isExecutable(self):
-        return os.access(self.path, os.X_OK)

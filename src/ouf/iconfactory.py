@@ -12,11 +12,11 @@ class IconFactory(object):
 
         # TODO: handle info from desktop files first
 
-        if fsitem.isDir():
-            if fsitem.isHome():
+        if fsitem.is_dir:
+            if fsitem.is_home:
                 mimetype = "user-home"
 
-            elif fsitem.isRoot():
+            elif fsitem.is_root:
                 icon = self.provider.icon(self.provider.Computer)
                 mimetype = "computer"
 
@@ -28,7 +28,7 @@ class IconFactory(object):
 
         if not icon:
             if not mimetype:
-                mimetype = fsitem.mimetype().replace("/", "-")
+                mimetype = fsitem.mimetype.replace("/", "-")
 
             if not mimetype:
                 # TODO: detect executable files

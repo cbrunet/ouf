@@ -101,7 +101,7 @@ class FileView(QtWidgets.QTreeView):
         if index.isValid():
             item = self.proxy.mapToSource(index).internalPointer()
             path = index.data(QtCore.Qt.UserRole)
-            if item.isDir():
+            if item.is_dir:
                 self.setRootIndex(index)
                 #TODO: unselect
                 self.current_path_changed.emit(path)

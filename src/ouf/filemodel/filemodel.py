@@ -33,7 +33,7 @@ class FileModel(QtCore.QAbstractItemModel):
 
     def canFetchMore(self, parent):
         if parent.isValid():
-            return not parent.internalPointer().isLoaded()
+            return not parent.internalPointer().loaded
         else:
             return False
 
@@ -71,7 +71,7 @@ class FileModel(QtCore.QAbstractItemModel):
 
     def fetchMore(self, parent):
         if parent.isValid():
-            path_list = parent.internalPointer().fetchPathList()
+            path_list = parent.internalPointer().fetch_path_list()
             last = len(path_list) - 1
             self.beginInsertRows(parent, 0, last)
             parent.internalPointer()._path_list = path_list
@@ -85,7 +85,7 @@ class FileModel(QtCore.QAbstractItemModel):
         if index.column() == 0:  # and is editable...
             f |= Qt.ItemIsEditable
         item = index.internalPointer()
-        if item.isDir():
+        if item.is_dir:
             f |= Qt.ItemIsDropEnabled
         else:
             f |= Qt.ItemNeverHasChildren
@@ -96,8 +96,8 @@ class FileModel(QtCore.QAbstractItemModel):
             if parent.column() != 0:
                 return False
             parent_item = parent.internalPointer()
-            if not parent_item.isLoaded():
-                return parent_item.isDir()
+            if not parent_item.loaded:
+                return parent_item.is_dir
         return self.rowCount() > 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):
@@ -113,7 +113,7 @@ class FileModel(QtCore.QAbstractItemModel):
 
         if parent.isValid():
             parent_item = parent.internalPointer()
-            path = parent_item.childPath(row)
+            path = parent_item.child_path(row)
             if path is None:
                 # invalid row
                 return QtCore.QModelIndex()
@@ -142,7 +142,7 @@ class FileModel(QtCore.QAbstractItemModel):
         if parent.isValid():
             if parent.column() != 0:
                 return 0
-            return parent.internalPointer().rowCount()
+            return len(parent.internalPointer())
         else:
             return 1
             return len(FileItemType)
@@ -292,7 +292,7 @@ class FileModel(QtCore.QAbstractItemModel):
             self.beginRemoveRows(parent_index, row, row)
             del parent.path_list[row]
             # del self._files[path]
-            if item.isDir():
+            if item.is_dir:
                 shutil.rmtree(path)
             else:
                 os.remove(path)
