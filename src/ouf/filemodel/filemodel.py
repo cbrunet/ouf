@@ -12,7 +12,7 @@ from ouf.filemodel.filesystemitem import FileSystemItem
 # TODO: icons
 # TODO: color symlinks / not readable / hidden
 # TODO: read .desktop files!
-# TODO: columns: mime, moddate, size, permissions, (crdate, user, group, hardlinks)
+# TODO: columns: moddate, permissions, (crdate, user, group, hardlinks)
 
 
 class FileModel(QtCore.QAbstractItemModel):

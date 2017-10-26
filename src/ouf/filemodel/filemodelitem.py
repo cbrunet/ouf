@@ -19,7 +19,14 @@ class FileItemType(IntEnum):
     # favorite = 3
 
 
+class Column(IntEnum):
+    name = 0
+    size = 1
+    mimetype = 2
+
+
 class FileModelItem(object):
+
     def __init__(self, itemtype, path):
         self.itemtype = itemtype
         self.path = path
@@ -64,7 +71,7 @@ class FileModelItem(object):
         return self._path_list
 
     def data(self, column, role=Qt.DisplayRole):
-        if column == 0:
+        if column == Column.name:
             if role == Qt.DisplayRole:
                 return os.path.basename(self.path)
 
@@ -79,7 +86,7 @@ class FileModelItem(object):
             if role == SortRole:
                 return self._alphanum
 
-        elif column == 1:
+        elif column == Column.size:
             if role == Qt.DisplayRole:
                 if self.is_dir:
                     if self.loaded:
@@ -101,18 +108,12 @@ class FileModelItem(object):
                     else:
                         return "F", 0
 
-        elif column == 2:
+        elif column == Column.mimetype:
             if role == Qt.DisplayRole or role == SortRole:
                 return self.mimetype
 
     def __len__(self):
         return len(self.path_list) if self.loaded else 0
-
-    def isRoot(self):
-        return self.path == '/'
-
-    def isHome(self):
-        r
 
     @property
     def is_dir(self):

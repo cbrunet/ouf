@@ -1,4 +1,20 @@
+from functools import lru_cache
 from PyQt5 import QtGui, QtCore, QtWidgets
+
+
+@lru_cache()
+def add_emblem(icon, emblem):
+    new_icon = QtGui.QIcon()
+    for mode in QtGui.QIcon.Normal, QtGui.QIcon.Disabled, QtGui.QIcon.Active, QtGui.QIcon.Selected:
+        for state in QtGui.QIcon.On, QtGui.QIcon.Off:
+            for size in icon.availableSizes(mode, state):
+                icon_pixmap = icon.pixmap(size, mode, state)
+                emblem_pixmap = emblem(size.width() / 2, size.height() / 2, mode, state)
+                painter = QtGui.QPainter(icon_pixmap)
+                painter.drawPixmap(size.width() / 2, size.height() / 2, emblem_pixmap)
+                painter.end()
+                new_icon.addPixmap(icon_pixmap, mode, state)
+    return new_icon
 
 
 class IconFactory(object):
@@ -45,8 +61,11 @@ class IconFactory(object):
 
         # TODO: set emblem for symbolic links
 
+        if fsitem.is_link:
+            emblem = self("emblem-symbolic-link")
+
         if emblem:
-            pass  # TODO: load emblem and add it to icon
+            icon = add_emblem(icon, emblem)
 
         if color:
             pass  # TODO: colorize icon
