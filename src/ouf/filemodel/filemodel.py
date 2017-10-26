@@ -20,7 +20,7 @@ class FileModel(QtCore.QAbstractItemModel):
     FileItem = {FileItemType.filesystem: FileSystemItem}
 
     ROOT_PATH = '/'
-    HEADERS = [_("Filename"), _("Size"), _("MimeType")]
+    HEADERS = [_("Filename"), _("Size"), _("MimeType"), _("Permissions")]
 
     def __init__(self, parent=None):
         super().__init__(parent)

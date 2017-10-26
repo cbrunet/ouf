@@ -23,6 +23,7 @@ class Column(IntEnum):
     name = 0
     size = 1
     mimetype = 2
+    permissions = 3
 
 
 class FileModelItem(object):
@@ -109,8 +110,12 @@ class FileModelItem(object):
                         return "F", 0
 
         elif column == Column.mimetype:
-            if role == Qt.DisplayRole or role == SortRole:
+            if role in (Qt.DisplayRole, SortRole):
                 return self.mimetype
+
+        elif column == Column.permissions:
+            if role in (Qt.DisplayRole, SortRole):
+                return self.permissions_string
 
     def __len__(self):
         return len(self.path_list) if self.loaded else 0
@@ -145,3 +150,61 @@ class FileModelItem(object):
                 if self._mimetype is None:
                     self._mimetype = ""
         return self._mimetype
+
+    @property
+    def permissions_string(self):
+        permissions = ["-" for _ in range(10)]
+        if self._stat is not None:
+            mode = self._stat[stat.ST_MODE]
+            if stat.S_ISSOCK(mode):
+                permissions[0] = "s"
+            elif stat.S_ISLNK(mode):
+                permissions[0] = "l"
+            elif stat.S_ISREG(mode):
+                permissions[0] = "-"
+            elif stat.S_ISBLK(mode):
+                permissions[0] = "b"
+            elif stat.S_ISDIR(mode):
+                permissions[0] = "d"
+            elif stat.S_ISCHR(mode):
+                permissions[0] = "c"
+            elif stat.S_ISFIFO(mode):
+                permissions[0] = "f"
+
+            if mode & stat.S_IRUSR:
+                permissions[1] = 'r'
+            if mode & stat.S_IWUSR:
+                permissions[2] = 'w'
+            if mode & stat.S_IXUSR:
+                if mode & stat.S_ISUID:
+                    permissions[3] = 's'
+                else:
+                    permissions[3] = 'x'
+            elif mode & stat.S_ISUID:
+                permissions[3] = 'S'
+
+            if mode & stat.S_IRGRP:
+                permissions[4] = 'r'
+            if mode & stat.S_IWGRP:
+                permissions[5] = 'w'
+            if mode & stat.S_IXGRP:
+                if mode & stat.S_ISGID:
+                    permissions[6] = 's'
+                else:
+                    permissions[6] = 'x'
+            elif mode & stat.S_ISGID:
+                permissions[6] = 'S'
+
+            if mode & stat.S_IROTH:
+                permissions[7] = 'r'
+            if mode & stat.S_IWOTH:
+                permissions[8] = 'w'
+            if mode & stat.S_IXOTH:
+                if mode & stat.S_ISVTX:
+                    permissions[9] = 't'
+                else:
+                    permissions[9] = 'x'
+            elif mode & stat.S_ISVTX:
+                permissions[9] = 'T'
+
+        return "".join(permissions)
