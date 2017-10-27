@@ -20,7 +20,7 @@ class FileModel(QtCore.QAbstractItemModel):
     FileItem = {FileItemType.filesystem: FileSystemItem}
 
     ROOT_PATH = '/'
-    HEADERS = [_("Filename"), _("Size"), _("MimeType"), _("Permissions")]
+    HEADERS = [_("Filename"), _("Size"), _("Last Modification"), _("MimeType"), _("Permissions"), _("Owner"), _("Group")]
 
     def __init__(self, parent=None):
         super().__init__(parent)
@@ -81,10 +81,12 @@ class FileModel(QtCore.QAbstractItemModel):
         if not index.isValid():
             return
 
-        f = Qt.ItemIsSelectable | Qt.ItemIsEnabled | Qt.ItemIsDragEnabled
+        f = Qt.ItemIsSelectable | Qt.ItemIsDragEnabled
         if index.column() == 0:  # and is editable...
             f |= Qt.ItemIsEditable
         item = index.internalPointer()
+        if not item.is_lock:
+            f |= Qt.ItemIsEnabled
         if item.is_dir:
             f |= Qt.ItemIsDropEnabled
         else:
@@ -97,7 +99,7 @@ class FileModel(QtCore.QAbstractItemModel):
                 return False
             parent_item = parent.internalPointer()
             if not parent_item.loaded:
-                return parent_item.is_dir
+                return parent_item.is_dir and not parent_item.is_lock
         return self.rowCount() > 0
 
     def headerData(self, section, orientation, role=Qt.DisplayRole):

@@ -100,20 +100,23 @@ class FileView(QtWidgets.QTreeView):
         """
         if index.isValid():
             item = self.proxy.mapToSource(index).internalPointer()
-            path = index.data(QtCore.Qt.UserRole)
+            if item.is_lock:
+                # TODO: prevent user
+                return
+
             if item.is_dir:
-                self.setRootIndex(index)
+                self.setRootIndex(self.proxy.index(index.row(), 0, index.parent()))
                 #TODO: unselect
-                self.current_path_changed.emit(path)
+                self.current_path_changed.emit(item.path)
                 QtCore.QCoreApplication.processEvents()  # Ensure the new path is set before resizing
                 self.resizeColumnToContents(0)
 
             else:
                 # TODO: open file / exec process / etc.
                 if sys.platform.startswith('linux'):
-                    subprocess.run(['xdg-open', path])
+                    subprocess.run(['xdg-open', item.path])
                 else:
-                    os.startfile(path)  # windows
+                    os.startfile(item.path)  # windows
         else:
             # go to root
             self.setRootIndex(index)

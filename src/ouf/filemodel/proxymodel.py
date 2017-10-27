@@ -1,4 +1,5 @@
 
+import os.path
 from PyQt5 import QtCore
 
 from ouf.filemodel import SortRole
@@ -13,12 +14,23 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
     def __init__(self, parent=None):
         super().__init__(parent)
 
+        self._current_path = ""
+
         self.setDynamicSortFilter(True)
         # self.setSortCaseSensitivity(False)
         # self.setSortLocaleAware(True)
         # self.setSortRole(SortRole)
         self._show_hidden = False
         self._show_dirs_only = False
+
+    @property
+    def current_path(self):
+        return self._current_path
+
+    @current_path.setter
+    def current_path(self, path):
+        self.invalidate()
+        self._current_path = path
 
     @property
     def show_hidden(self):
@@ -49,16 +61,24 @@ class FileProxyModel(QtCore.QSortFilterProxyModel):
 
         """
         index = self.sourceModel().index(source_row, 0, source_parent)
-        if not self.show_hidden:
-            name = index.data()
-            if name.startswith("."):
-                return False
 
-        if self.show_dirs_only:
-            if not index.internalPointer().isDir():
-                return False
+        if index.isValid():
+            item = index.internalPointer()
+
+            if self.current_path.startswith(item.path):
+                # Allow to navigate in hidden folder even if not visible
+                return True
+
+            if not self.show_hidden:
+                return not item.is_hidden
+
+            if self.show_dirs_only:
+                if not item.is_dir:
+                    return False
 
         return super().filterAcceptsRow(source_row, source_parent)
 
     def lessThan(self, left, right):
-        return left.data(SortRole) < right.data(SortRole)
+        if left.isValid() and right.isValid():
+            return left.data(SortRole) < right.data(SortRole)
+        return False

@@ -127,4 +127,5 @@ class PathView(QtWidgets.QWidget):
         if path != self.ROOT_PATH:
             path = path.rstrip(os.sep)
         self.path = path
-        return self.path == os.path.expanduser(path)
+        self._view.proxy.current_path = os.path.expanduser(path)
+        return self.path == self._view.proxy.current_path
